@@ -65,7 +65,7 @@ def main():
 
         # Output n, error and elapsed time
         elapsed = time.time() - start_time
-        print(f"n: {n}, error: {error:f}, elapsed: {elapsed:f} seconds")
+        print(f"{n}, {error:f},{elapsed:f}")
 
 
 

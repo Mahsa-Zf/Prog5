@@ -18,6 +18,7 @@ echo "Starting integration jobs..."
 # Set integration limits
 a=0.0
 b=3.141592653589793  # pi
+echo "n,error,elapsed(Seconds)" > results.csv
 
 # Run multiple n values in a loop
 for n in 10 100 500 1000 2000
