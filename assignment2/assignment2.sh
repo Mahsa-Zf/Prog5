@@ -22,15 +22,10 @@ b=3.141592653589793  # pi
 # Run multiple n values in a loop
 for n in 10 100 500 1000 2000
 do
-    start_time=$(date +%s.%N)  # record start time with nanoseconds precision
-
+    # Run python program and append output to results.csv
     srun python3 assignment2.py $a $b $n >> results.csv
 
-    end_time=$(date +%s.%N)  # record end time
-    elapsed=$(echo "$end_time - $start_time" | bc)  # compute elapsed time using bc
-    echo "elapsed: $elapsed" >> results.csv
-
-    echo "Completed integration with n=$n in $elapsed seconds"
+    echo "Completed integration with n=$n"
 done
 
 

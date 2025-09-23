@@ -1,16 +1,16 @@
 """Assignment 2: Numerical Integration (Trapezoidal Rule) Using SLURM"""
 __author__ = "Mahsa Zamanifard"
-__date__ = "2025-09-18"
-
+__date__ = "2025-09-23"
 import sys
+import time
 import math
 from sympy import symbols, integrate, cos
 from mpi4py import MPI
 
+start_time = time.time()
 comm = MPI.COMM_WORLD
 rank = comm.Get_rank()
 size = comm.Get_size()
-# print("Rank: ", rank, " Size: ", size)
 
 def trapezoid(func, a, b, n=256):
     """Numerically integrate func from a to b with n trapezoids."""
@@ -30,16 +30,15 @@ def main():
     b = float(sys.argv[2])
     n = int(sys.argv[3])
 
-    # Define the function to integrate
+    # Defining the function to integrate
     fcos = math.cos
     quotient = n // size
     remainder = n % size
     step_size = (b - a) / n
 
-    # Assign workload including remainder to rank 0
-    # Performing numerical integral using trapezoid method
-    # First we scatter the workload
+    # Scattering the workload
     if rank == 0:
+        # Assigning workload including remainder to rank 0
         local_n = quotient + remainder
         local_a = a
     else:
@@ -48,11 +47,13 @@ def main():
 
     local_b = local_a + local_n * step_size
 
+    # Performing numerical integral using trapezoid method
     local_result = trapezoid(fcos, local_a, local_b, local_n)
 
-    # Now we gather the results
+    # Gathering the results
     results = comm.gather(local_result, root=0)
 
+    # Outputing the final result and error from rank 0
     if rank == 0:
         numerical = sum(results)
          # Symbolic exact integral of cos(x) from a to b
@@ -62,8 +63,9 @@ def main():
         # Error (difference)
         error = abs(exact - numerical)
 
-        # Output n and error separated by a comma
-        print(f"n: {n}, error: {error:f}")
+        # Output n, error and elapsed time
+        elapsed = time.time() - start_time
+        print(f"n: {n}, error: {error:f}, elapsed: {elapsed:f} seconds")
 
 
 
