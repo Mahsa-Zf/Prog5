@@ -1,0 +1,18 @@
+         11 function calls in 0.012 seconds
+
+   Ordered by: cumulative time
+   List reduced from 11 to 10 due to restriction <10>
+
+   ncalls  tottime  percall  cumtime  percall filename:lineno(function)
+        1    0.011    0.011    0.012    0.012 /homes/mzamanifard/Documents/prog5/Prog5/assignment3/assignment3.py:19(sieve)
+        1    0.001    0.001    0.001    0.001 /homes/mzamanifard/Documents/prog5/Prog5/assignment3/assignment3.py:34(<listcomp>)
+        1    0.000    0.000    0.000    0.000 /usr/lib/python3/dist-packages/numpy/core/numeric.py:150(ones)
+        1    0.000    0.000    0.000    0.000 <__array_function__ internals>:177(copyto)
+        1    0.000    0.000    0.000    0.000 {built-in method numpy.arange}
+        1    0.000    0.000    0.000    0.000 {built-in method builtins.round}
+        1    0.000    0.000    0.000    0.000 {built-in method numpy.core._multiarray_umath.implement_array_function}
+        1    0.000    0.000    0.000    0.000 {built-in method numpy.empty}
+        1    0.000    0.000    0.000    0.000 /usr/lib/python3/dist-packages/numpy/core/multiarray.py:1079(copyto)
+        1    0.000    0.000    0.000    0.000 {method 'disable' of '_lsprof.Profiler' objects}
+
+
