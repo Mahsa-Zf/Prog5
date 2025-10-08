@@ -34,15 +34,22 @@ def main():
         conn = engine.connect()
         # conn.execute('status') # deprecated
 
-        # with engine.connect() as conn:
+        # with engine.connect() as conn: # ---> for testing purposes
         #     result = conn.execute(text("SELECT CONNECTION_ID();"))
         #     for row in result:
         #         print("Connection ID:", row[0])
 
 
         # After reviewing the .gbff file, my proposed database schema is as follows:
+
         # Species Table:
-        # name, accession number (PK), genome size, number of genes, number of proteins, taxdb_id
+        # name, 
+        # accession number (PK), 
+        # genome size, 
+        # number of genes, 
+        # number of proteins, 
+        # taxdb_id
+
         # Protein Table:
         # proteinid (PK),
         # product name,
@@ -81,7 +88,7 @@ def main():
         """))
 
         if len(sys.argv) != 2:
-            print("Usage: python assignment3.py n")
+            print("Usage: python assignment4.py .gbff_file")
             sys.exit(1)
 
         gbff_file = sys.argv[1]
