@@ -5,7 +5,7 @@
 
 * Your discussion partner's name: Martijn Herber
 
-* Commit hash of the code you discussed: 
+* Commit hash of the code you discussed: 8bfc8eb
 
 * Your code's pylint score: 9.11
 
