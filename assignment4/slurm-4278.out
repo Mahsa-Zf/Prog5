@@ -1,0 +1,4 @@
+/homes/mzamanifard/Documents/prog5/Prog5/assignment4/assignment4.py:127: RemovedIn20Warning: Deprecated API features detected! These feature(s) are not compatible with SQLAlchemy 2.0. To prevent incompatible upgrades prior to updating applications, ensure requirements files are pinned to "sqlalchemy<2.0". Set environment variable SQLALCHEMY_WARN_20=1 to show all deprecation warnings.  Set environment variable SQLALCHEMY_SILENCE_UBER_WARNING=1 to silence this message. (Background on SQLAlchemy 2.0 at: https://sqlalche.me/e/b8d9)
+  conn.execute(text("DROP TABLE IF EXISTS Protein, Species"))
+0.00user 0.00system 4:54.62elapsed 0%CPU (0avgtext+0avgdata 8952maxresident)k
+40inputs+8outputs (1major+1243minor)pagefaults 0swaps
