@@ -40,8 +40,12 @@ def extract_info(record):
 
     genome_size = len(record.seq)
 
-    gene_count = sum(1 for feature in record.features if feature.type == "gene")
-    protein_count = sum(1 for feature in record.features if feature.type == "CDS")
+    gene_count, protein_count = 0, 0
+    for feature in record.features:
+        if feature.type == "gene":
+            gene_count += 1
+        elif feature.type == "CDS":
+            protein_count += 1
 
     # Species data tuple for insertion
     species_data = {
@@ -87,13 +91,14 @@ def main():
 
     if len(sys.argv) != 2:
         if rank == 0:
-            print("Usage: mpiexec -n <num_procs> python assignment4.py .gbff_file")
+            print("Usage: srun python assignment4.py .gbff_file")
         sys.exit(1)
 
     gbff_file = sys.argv[1]
 
     # Root rank reads all records and distributes them
     if rank == 0:
+        # using "genbank" to tell Biopython’s SeqIO parser that the file is in GenBank format
         records = list(SeqIO.parse(open(gbff_file, "r"), "genbank"))
         # Split records into roughly equal chunks for each rank
         chunks = [records[i::size] for i in range(size)]
@@ -238,14 +243,14 @@ if __name__ == "__main__":
 #         """))
 
 #         if len(sys.argv) != 2:
-#             print("Usage: python assignment4.py .gbff_file")
+#             print("Usage: srun python assignment4.py .gbff_file")
 #             sys.exit(1)
 
 #         gbff_file = sys.argv[1]
 #         # Path to the .gbff file for testing purposes
 #         # gbff_file = \
 #         # "/data/datasets/NCBI/refseq/ftp.ncbi.nlm.nih.gov/refseq/release/archaea/archaea.1\
-#         # .genomic.gbff"
+# .genomic.gbff"
 
 #         # Parse the .gbff file and extract information to fill the database
 #         with open(gbff_file, "r", encoding="utf-8") as handle:
@@ -271,7 +276,7 @@ if __name__ == "__main__":
 #                 accession_version = f"{accession}.{version}" if version else accession
 
 
-#                 # Genome size in base pairs
+#                 # Genome size in base pairs, stated in the metadata of the record LOCUS e.g. 15799 bp
 #                 genome_size = len(record.seq)
 
 
