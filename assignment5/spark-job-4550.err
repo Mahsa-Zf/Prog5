@@ -1,0 +1,5 @@
+Setting default log level to "WARN".
+To adjust logging level use sc.setLogLevel(newLevel). For SparkR, use setLogLevel(newLevel).
+25/10/17 01:19:01 WARN NativeCodeLoader: Unable to load native-hadoop library for your platform... using builtin-java classes where applicable
+[Stage 0:>                                                          (0 + 1) / 2][Stage 0:=============================>                             (1 + 1) / 2]                                                                                0.00user 0.00system 2:34.36elapsed 0%CPU (0avgtext+0avgdata 9200maxresident)k
+0inputs+40outputs (0major+1246minor)pagefaults 0swaps

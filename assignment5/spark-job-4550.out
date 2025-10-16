@@ -1,0 +1,37 @@
+Processing file: /homes/mzamanifard/Documents/prog5/archaea.2.genomic.gbff
+
+Total genomes: 32894
+
++--------------------+------------+-----------+-----------------------------+----------------+---------+
+|accession           |coding_genes|genome_size|name                         |non_coding_genes|num_genes|
++--------------------+------------+-----------+-----------------------------+----------------+---------+
+|NZ_LWMV01000163.1   |24          |22696      |Methanobrevibacter curvatus  |0               |24       |
+|NZ_LMVP01000345.1   |0           |777        |Methanosarcina spelaei       |0               |0        |
+|NZ_JALKIF010000038.1|0           |523        |Methanobacterium alcaliphilum|1               |1        |
+|NZ_JALKIF010000057.1|0           |217        |Methanobacterium alcaliphilum|0               |0        |
+|NZ_QPLS01000313.1   |0           |431        |Halorubrum sp. Atlit-28R     |0               |0        |
++--------------------+------------+-----------+-----------------------------+----------------+---------+
+only showing top 5 rows
+
+
+=== Question 1 ===
+Average number of features per Archaeal genome: 42.60
+
+=== Question 2 ===
+Total coding genes: 1376596
+Total non-coding genes: 24693
+Ratio (coding/non-coding): 55.75
+
+=== Question 3 ===
+Minimal number of proteins in a genome: 0
+Maximal number of proteins in a genome: 4038
+
+=== Question 4 ===
+Average length of a feature: 1018.56 bp
+
+=== Question 5 ===
+Non-coding (RNA) features removed. Cleaned DataFrame created.
+Cleaned DataFrame has 32894 genomes
+
+=== Question 6 ===
+Average length of a coding feature: 1036.83 bp

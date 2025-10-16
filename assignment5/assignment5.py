@@ -3,17 +3,8 @@ import sys
 from Bio import SeqIO
 sys.path.append('/opt/spark/python')
 sys.path.append('/opt/spark/python/lib/py4j-0.10.9.7-src.zip')
-from pyspark import SparkFiles
-from pyspark.sql import SparkSession, Row 
-# , SQLContext
-
-spark = SparkSession.builder.appName("assignment5_mahsa_zamanifard").master("spark://spark.bin.bioinf.nl:7077").getOrCreate()
-sc = spark.sparkContext
-# sqlContext = SQLContext(sc)
-
-"""Be sure to synchronize the resources your request (local[16] means 16 processes, "128g" 
-means that much RAM) with the resources you request via the SLURM script 
-e.g. --ntasks and --mem directives!"""
+from pyspark.sql import SparkSession
+from pyspark.sql.functions import col, sum as spark_sum, avg, min as spark_min, max as spark_max
 
 def extract_info(record):
     """Extract Species and Protein info from a single GenBank record."""
@@ -25,20 +16,14 @@ def extract_info(record):
     genome_size = len(record.seq)
     gene_count, coding_count = 0, 0
     for feature in record.features:
-        # to exclude location containing < or > symbols
         if not any(x in str(feature.location) for x in (">", "<")):
-            if feature.type.lower() == "gene":
+            if feature.type == "gene":
                 gene_count += 1
-            elif feature.type.lower() in ["cds", "pro-peptides"]:
+            elif feature.type in ["CDS", "Pro-peptides"]:
                 coding_count += 1
 
-    # we always have gene in the feature.type that locates the corresponding basepairs
-    # for every coding/non-coding sequence, since CDS is the only coding sequence
-    # we can find non-coding count by subtracting coding_count from gene_count
     non_coding_count = gene_count - coding_count
 
-
-    # Species data for insertion
     species_data = {
         "accession": accession_version,
         "name": species,
@@ -50,77 +35,116 @@ def extract_info(record):
 
     return species_data
 
+def print_question_1(species_df):
+    """Question 1: Average number of features per genome"""
+    print("\n=== Question 1 ===")
+    # .collect() brings data from executors to the driver
+    # gets the first element of the first row which means it returns only a number
+    avg_features = species_df.agg(avg('num_genes')).collect()[0][0] 
+    print(f"Average number of features per Archaeal genome: {avg_features:.2f}")
 
-########## FOR TESTING PURPOSES#######
-# gbff_file = "/data/datasets/NCBI/refseq/ftp.ncbi.nlm.nih.gov/refseq/release/archaea/archaea.2\
-# .genomic.gbff"
-# with open(gbff_file, "r", encoding="utf-8") as handle:
-#             for rec in SeqIO.parse(handle, "genbank"):
-#                 sp = extract_info(rec)
-#                 print(sp)
-#                 break
+def print_question_2(species_df):
+    """Question 2: Ratio between coding and non-coding features"""
+    print("\n=== Question 2 ===")
+    totals = species_df.agg(
+        spark_sum('coding_genes').alias('total_coding'),
+        spark_sum('non_coding_genes').alias('total_noncoding')
+    ).collect()[0]
 
+    ratio = totals['total_coding'] / totals['total_noncoding'] if totals['total_noncoding'] != 0 else None
+    print(f"Total coding genes: {totals['total_coding']}")
+    print(f"Total non-coding genes: {totals['total_noncoding']}")
+    print(f"Ratio (coding/non-coding): {ratio:.2f}")
+
+def print_question_3(species_df):
+    """Question 3: Min and max number of proteins"""
+    print("\n=== Question 3 ===")
+    stats = species_df.agg(
+        spark_min('coding_genes').alias('min_proteins'),
+        spark_max('coding_genes').alias('max_proteins')
+    ).collect()[0]
+
+    print(f"Minimal number of proteins in a genome: {stats['min_proteins']}")
+    print(f"Maximal number of proteins in a genome: {stats['max_proteins']}")
+
+def print_question_4(species_df):
+    """Question 4: Average length of a feature"""
+    print("\n=== Question 4 ===")
+    totals = species_df.agg(
+        spark_sum('genome_size').alias('total_bases'),
+        spark_sum('num_genes').alias('total_genes')
+    ).collect()[0]
+
+    avg_feature_length = totals['total_bases'] / totals['total_genes']
+    print(f"Average length of a feature: {avg_feature_length:.2f} bp")
+
+def print_question_5(species_df):
+    """Question 5: Create DataFrame without non-coding genes"""
+    print("\n=== Question 5 ===")
+    coding_df = species_df.select(
+        'accession',
+        'name',
+        'genome_size',
+        'coding_genes'
+    )
+    print("Non-coding (RNA) features removed. Cleaned DataFrame created.")
+    print(f"Cleaned DataFrame has {coding_df.count()} genomes")
+    return coding_df
+
+def print_question_6(coding_df):
+    """Question 6: Average length in cleaned version"""
+    print("\n=== Question 6 ===")
+    totals_coding = coding_df.agg(
+        spark_sum('genome_size').alias('total_bases'),
+        spark_sum('coding_genes').alias('total_coding')
+    ).collect()[0]
+
+    avg_coding_length = totals_coding['total_bases'] / totals_coding['total_coding']
+    print(f"Average length of a coding feature: {avg_coding_length:.2f} bp")
 
 def main():
-    gbff_file = sys.argv[1]  # Get file from command line argument
+    """Main function to run the analysis."""
+    # Local Spark session
+    # spark = SparkSession.builder \
+    #     .appName('assignment5_mahsa') \
+    #     .master('local[16]') \
+    #     .config('spark.executor.memory', '128g') \
+    #     .config('spark.driver.memory', '128g') \
+    #     .getOrCreate()
+
+    # Remote Spark cluster
+    spark = SparkSession.builder \
+    .appName("assignment5_mahsa_zamanifard") \
+    .master("spark://spark.bin.bioinf.nl:7077") \
+    .getOrCreate()
+
+    gbff_file = sys.argv[1]
     print(f"Processing file: {gbff_file}")
 
+    # Parse GenBank file (runs on driver)
     records = list(SeqIO.parse(gbff_file, "genbank"))
+    info = [extract_info(record) for record in records]
 
-    # Parallelize the list of SeqIO records
-    records_rdd = sc.parallelize(records, numSlices=16)
+    # Create DataFrame and optimize
+    species_df = spark.createDataFrame(info)
+    species_df.cache()  # Cache because we use it multiple times
 
-    # Apply extraction function to each record in parallel
-    species_rdd = records_rdd.map(extract_info)
+    print(f"\nTotal genomes: {species_df.count()}\n")
+    species_df.show(5, truncate=False)
 
-    # Create DataFrame from Rows RDD
-    df = spark.createDataFrame(species_rdd)
+    # Answer all questions
+    print_question_1(species_df)
+    print_question_2(species_df)
+    print_question_3(species_df)
+    print_question_4(species_df)
+    coding_df = print_question_5(species_df)
+    print_question_6(coding_df)
 
-    df.show(5, truncate=False)
+    # Cleanup: Remove cached data from memory
+    species_df.unpersist()
 
-    # def print_question_1():
-    #     # How many features does an Archaeal genome have on average?
-    #     avg_features = species_df.groupBy('accession').count().agg({'count': 'avg'}).collect()[0][0]
-    #     print(f"Average number of features per Archaeal genome: {avg_features}")
+    # Stop Spark session (releases all resources)
+    spark.stop()
 
-    # def print_question_2():
-    #     # What is the ratio between coding and non-coding features?
-    #     coding = species_df.filter(species_df.coding_genes > 0).count()
-    #     noncoding = species_df.filter(species_df.non_coding_genes > 0).count()
-    #     ratio = coding / noncoding if noncoding != 0 else None
-    #     print(f"Ratio between coding and non-coding features: {ratio}")
-
-    # def print_question_3():
-    #     # Minimal and maximal number of proteins in a genome for all organisms in the file
-    #     protein_counts = species_df.filter(species_df.coding_genes > 0).groupBy('accession').count()
-    #     min_proteins = protein_counts.agg({'count': 'min'}).collect()[0][0]
-    #     max_proteins = protein_counts.agg({'count': 'max'}).collect()[0][0]
-    #     print(f"Minimal number of proteins in a genome: {min_proteins}")
-    #     print(f"Maximal number of proteins in a genome: {max_proteins}")
-
-    # def print_question_4():
-    #     # What is the average length of a feature?
-    #     avg_length = species_df.agg({'num_genes': 'avg'}).collect()[0][0]
-    #     print(f"Average length of a feature: {avg_length}")
-
-    # def print_question_5():
-    #     # Remove all non-coding (RNA) features and save the cleaned-up version as a new DataFrame
-    #     coding_df = species_df.drop('non_coding_genes')
-    #     coding_df.createOrReplaceTempView("coding_genomes")
-    #     print("Non-coding (RNA) features removed. Cleaned DataFrame registered as 'coding_genomes'.")
-
-    # def print_question_6():
-    #     # What is the average length of a feature in this cleaned-up version?
-    #     avg_coding_length = coding_df.agg({'coding_genes': 'avg'}).collect()[0][0]
-    #     print(f"Average length of a feature in the cleaned-up DataFrame: {avg_coding_length}")
-
-
-
-    # print_question_1()
-    # print_question_2()
-    # print_question_3()
-    # print_question_4()
-    # print_question_5()
-    # print_question_6()
 if __name__ == "__main__":
     main()
