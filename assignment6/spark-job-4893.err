@@ -1,0 +1,8 @@
+25/10/29 14:22:18 WARN NativeCodeLoader: Unable to load native-hadoop library for your platform... using builtin-java classes where applicable
+Setting default log level to "WARN".
+To adjust logging level use sc.setLogLevel(newLevel). For SparkR, use setLogLevel(newLevel).
+25/10/29 14:22:25 WARN SparkStringUtils: Truncated the string representation of a plan since it was too large. This behavior can be adjusted by setting 'spark.sql.debug.maxToStringFields'.
+25/10/29 14:22:29 WARN ErrorPacket: Error: 1146-42S02: Table 'Mzamanifard.dbnsfp_top5_results' doesn't exist
+25/10/29 14:22:30 WARN GarbageCollectionMetrics: To enable non-built-in garbage collector(s) List(G1 Concurrent GC), users should configure it(them) to spark.eventLog.gcMetrics.youngGenerationGarbageCollectors or spark.eventLog.gcMetrics.oldGenerationGarbageCollectors
+[Stage 11:>                                                         (0 + 1) / 1]                                                                                0.00user 0.00system 0:16.91elapsed 0%CPU (0avgtext+0avgdata 8484maxresident)k
+0inputs+56outputs (0major+1206minor)pagefaults 0swaps

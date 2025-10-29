@@ -1,0 +1,27 @@
+Processing file: sample.txt.gz
+Found classifier columns:
+35
+{'SIFT': 336, 'SIFT4G': 336, 'Polyphen2_HDIV': 336, 'Polyphen2_HVAR': 336, 'LRT': 336, 'MutationTaster': 333, 'MutationAssessor': 336, 'FATHMM': 336, 'PROVEAN': 336, 'MetaSVM': 445, 'MetaLR': 445, 'MetaRNN': 478, 'M-CAP': 326, 'PrimateAI': 317, 'DEOGEN2': 336, 'BayesDel_addAF': 336, 'BayesDel_noAF': 336, 'ClinPred': 326, 'LIST-S2': 478, 'ESM1b': 336, 'EVE_Class10': 336, 'EVE_Class20': 336, 'EVE_Class25': 336, 'EVE_Class30': 336, 'EVE_Class40': 336, 'EVE_Class50': 336, 'EVE_Class60': 336, 'EVE_Class70': 336, 'EVE_Class75': 336, 'EVE_Class80': 336, 'EVE_Class90': 336, 'AlphaMissense': 469, 'Aloft': 336, 'fathmm-MKL_coding': 499, 'fathmm-XF_coding': 336}
+Classifier counts (sorted):
+fathmm-MKL_coding: 499
+MetaRNN: 478
+LIST-S2: 478
+AlphaMissense: 469
+MetaSVM: 445
+Position with the most predictions:
++---------+-----------------+
+|genome_id|total_predictions|
++---------+-----------------+
+|  1:69161|               15|
++---------+-----------------+
+
+Protein with the most predictions:
++--------------------+-----------------+
+|   Ensembl_proteinid|total_predictions|
++--------------------+-----------------+
+|ENSP00000493376;E...|             1670|
++--------------------+-----------------+
+
+Saving results to MariaDB database...
+Successfully saved data to database.
+Stopping Spark session...
