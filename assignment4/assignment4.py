@@ -106,12 +106,40 @@ def main():
         chunks = None
 
     # Scatter chunks to all ranks
+    # comm.scatter() takes a list and sends the i-th element of that list to the i-th rank.
+    # It does not automatically divide the list into chunks.
     local_records = comm.scatter(chunks, root=0)
 
     # Each rank processes its own chunk
     local_results = [extract_info(rec) for rec in local_records]
 
     # Gather results at root
+    # NOTE:
+    """
+    The function comm.gather(data_to_send, root=0) as having two jobs:
+
+        For Worker Ranks (e.g., rank 1, 2, 3...):
+
+        Their job is to SEND.
+
+        They take the data_to_send (their local_results) and send it to rank 0.
+
+        Once the send is complete, their part of the operation is over. The function doesn't have anything meaningful to give back to them (it doesn't give them the final collected list).
+
+        Therefore, the function returns None.
+
+        For the Root Rank (rank 0):
+
+        Its job is to RECEIVE and COLLECT.
+
+        It takes its own data_to_send (its local_results) and puts it first in a new list.
+
+        It then waits to receive the data from rank 1, rank 2, rank 3, and so on, and appends each one to that list.
+
+        Once it has collected data from every rank, the function's job is over.
+
+        It returns the complete, collected list.
+    """
     gathered_results = comm.gather(local_results, root=0)
 
     if rank == 0:
