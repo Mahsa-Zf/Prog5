@@ -11,3 +11,5 @@
 - Structured Query Language (SQL), the standard programming language for interacting with relational databases. 
 - Parallel programming on large clusters, using the Apache Spark framework. 
 - Cassandra, a distributed database, which is a good example of a NoSQL database, and which is often used in combination with Spark
+
+[Course Info Website](https://bioinf.nl/~martijn/prog5/)
