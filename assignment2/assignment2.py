@@ -1,4 +1,4 @@
-"""Assignment 2: Numerical Integration (Trapezoidal Rule) Using SLURM"""
+"""Assignment 2: Numerical Integration (Trapezoidal Rule) Using SLURM and Parallized Using the OpenMPI Framework"""
 __author__ = "Mahsa Zamanifard"
 __date__ = "2025-09-23"
 import sys
