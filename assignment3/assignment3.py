@@ -1,4 +1,5 @@
 """
+We'll be measuring the code for performance, We are going to use python profiler to see how much time each part of the code takes
 algorithm Sieve of Eratosthenes is
     input: an integer n > 1.
     output: all prime numbers from 2 through n.
@@ -12,7 +13,7 @@ algorithm Sieve of Eratosthenes is
                 set A[j] := false
 
     return all i such that A[i] is true.
-We are going to use python profiler to see how much time each part of the code takes
+
 """
 import sys
 import numpy as np
